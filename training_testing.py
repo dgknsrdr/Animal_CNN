@@ -1,9 +1,11 @@
 import torch
 
-def training_data(loss_fn:torch.nn.Module,optimizer:torch.optim.Optimizer,model:torch.nn.Module,train_loader:torch.utils.data.DataLoader):
+def training_data(loss_fn:torch.nn.Module,optimizer:torch.optim.Optimizer,model:torch.nn.Module,train_loader:torch.utils.data.DataLoader, device:torch.device):
     model.train()
     train_loss , train_accuracy ,total_sample = 0,0,0
     for batch , (X,y) in enumerate(train_loader):
+        X = X.to(device)
+        y= y.to(device)
         y_pred = model(X)
         loss = loss_fn(y_pred,y)
         train_loss+=loss.item()
@@ -21,11 +23,13 @@ def training_data(loss_fn:torch.nn.Module,optimizer:torch.optim.Optimizer,model:
 
 
 
-def testing_data(loss_fn:torch.nn.Module,optimizer:torch.optim.Optimizer,model:torch.nn.Module,test_loader:torch.utils.data.DataLoader):
+def testing_data(loss_fn:torch.nn.Module,optimizer:torch.optim.Optimizer,model:torch.nn.Module,test_loader:torch.utils.data.DataLoader,device:torch.device):
     model.eval()
     test_loss , test_accuracy , total_sample = 0,0,0
     with torch.inference_mode():
         for X,y in test_loader:
+            X = X.to(device)
+            y = y.to(device)
             test_pred = model(X)
             loss = loss_fn(test_pred,y)
             test_loss += loss.item()
@@ -45,7 +49,9 @@ def training (loss_fn:torch.nn.Module,
               model:torch.nn.Module,
               train_loader:torch.utils.data.DataLoader,
               test_loader:torch.utils.data.DataLoader,
-              epochs:int):
+              epochs:int,
+              device:torch.device):
+
     results = {
         "train loss": [],
         "test loss": [],
@@ -55,8 +61,8 @@ def training (loss_fn:torch.nn.Module,
     }
 
     for epoch in range(epochs):
-        train_loss , train_accuracy = training_data(loss_fn,optimizer,model,train_loader)
-        test_loss ,test_accuracy = testing_data(loss_fn,optimizer,model,test_loader)
+        train_loss , train_accuracy = training_data(loss_fn,optimizer,model,train_loader,device)
+        test_loss ,test_accuracy = testing_data(loss_fn,optimizer,model,test_loader,device)
 
 
         print(

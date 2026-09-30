@@ -1,10 +1,14 @@
 import torch
+from torch.cpu import is_available
 from torchvision import datasets,transforms
 from torch.utils.data import random_split,DataLoader,Subset
 from training_testing import training
 import torch.nn as nn
 import animal_model
 
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(device)
 
 train_transform = transforms.Compose([
     transforms.Resize((128,128)),
@@ -43,10 +47,10 @@ train_loader = DataLoader(dataset=train_data,batch_size=32,shuffle=True)
 test_laoder = DataLoader(dataset=test_data,batch_size=32,shuffle=False)
 val_loader = DataLoader(dataset=val_data,batch_size=32,shuffle=False)
 
-model = animal_model.AnimalModel()
+model = animal_model.AnimalModel().to(device)
 optimizer = torch.optim.Adam(params=model.parameters(),lr=0.001)
 loss_fn = nn.CrossEntropyLoss()
 
-result = training(loss_fn=loss_fn,optimizer=optimizer,model=model,train_loader=train_loader,test_loader=val_loader,epochs=20)
+result = training(loss_fn=loss_fn,optimizer=optimizer,model=model,train_loader=train_loader,test_loader=val_loader,epochs=20,device=device)
 
 print(result)

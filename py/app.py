@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 EFFICIENT_MODEL_PATH = BASE_DIR / "models" / "efficientnet_animals.pth"
 
 # Kendi modelini eklediğinde None yerine dosya yolunu yaz:
-BASIC_MODEL_PATH = BASE_DIR / "models" / "basic_animals.pth
+BASIC_MODEL_PATH = BASE_DIR / "models" / "basic_animals.pth"
 
 MAX_BYTES = 10 * 1024 * 1024
 lock = Lock()

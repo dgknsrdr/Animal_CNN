@@ -1,21 +1,42 @@
 import torch
 
-def training_data(loss_fn:torch.nn.Module,optimizer:torch.optim.Optimizer,model:torch.nn.Module,train_loader:torch.utils.data.DataLoader, device:torch.device):
+def training_data(loss_fn:torch.nn.Module,
+                  optimizer:torch.optim.Optimizer,
+                  model:torch.nn.Module,
+                  train_loader:torch.utils.data.DataLoader,
+                  device:torch.device):
+
+
     model.train()
+
+
+    if hasattr(model, "features"):
+        if all(not p.requires_grad for p in model.features.parameters()):
+            model.features.eval()
+
+
     train_loss , train_accuracy ,total_sample = 0,0,0
+
     for batch , (X,y) in enumerate(train_loader):
+
         X = X.to(device)
         y= y.to(device)
+
         y_pred = model(X)
         loss = loss_fn(y_pred,y)
-        train_loss+=loss.item()
+
         batch_size = y.size(0)
+
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
         y_pred_label = torch.argmax(y_pred,dim=1)
-        train_accuracy += (y_pred_label==y).sum().item()/len(y_pred)
+
+        train_loss += loss.item() * batch_size
+        train_accuracy += (y_pred_label == y).sum().item()
         total_sample +=batch_size
+
     train_loss = train_loss/total_sample
     train_accuracy = train_accuracy/total_sample
 
@@ -23,20 +44,32 @@ def training_data(loss_fn:torch.nn.Module,optimizer:torch.optim.Optimizer,model:
 
 
 
-def testing_data(loss_fn:torch.nn.Module,optimizer:torch.optim.Optimizer,model:torch.nn.Module,test_loader:torch.utils.data.DataLoader,device:torch.device):
+def testing_data(loss_fn:torch.nn.Module,
+                 optimizer:torch.optim.Optimizer,
+                 model:torch.nn.Module,
+                 test_loader:torch.utils.data.DataLoader,
+                 device:torch.device):
+
     model.eval()
+
     test_loss , test_accuracy , total_sample = 0,0,0
+
     with torch.inference_mode():
         for X,y in test_loader:
+
             X = X.to(device)
             y = y.to(device)
+
             test_pred = model(X)
-            loss = loss_fn(test_pred,y)
-            test_loss += loss.item()
+            loss = loss_fn(test_pred, y)
+
             batch_size = y.size(0)
-            test_pred_label = torch.argmax(test_pred,dim=1)
-            test_accuracy += (test_pred_label==y).sum().item()/len(test_pred)
+
+            test_loss += loss.item() * batch_size
+            test_pred_label = test_pred.argmax(dim=1)
+            test_accuracy += (test_pred_label == y).sum().item()
             total_sample += batch_size
+
         test_loss /= total_sample
         test_accuracy /= total_sample
     return test_loss,test_accuracy
@@ -78,4 +111,4 @@ def training (loss_fn:torch.nn.Module,
         results["test loss"].append(test_loss.item() if isinstance(test_loss, torch.Tensor) else test_loss)
         results["test accuracy"].append(test_accuracy.item() if isinstance(test_accuracy, torch.Tensor) else test_accuracy)
 
-    return results
+    return results ,model

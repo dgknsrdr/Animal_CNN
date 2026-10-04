@@ -13,7 +13,7 @@ from fastapi.responses import FileResponse
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 from Transforms import Get_Transform
-from animal_model import AnimalModel
+from py.animal_model import AnimalModel
 
 
 # app.py'nin bir üstünde models ve template klasörleri bulunuyor.
@@ -275,5 +275,4 @@ def predict(
 
 if __name__ == "__main__":
     import uvicorn
-
     uvicorn.run(app, host="127.0.0.1", port=8000)

@@ -34,4 +34,4 @@ loss_fn = nn.CrossEntropyLoss()
 result,processed_model = training(loss_fn=loss_fn,optimizer=optimizer1,model=efficient_model,train_loader=train_loader,test_loader=test_loader,epochs=20,device=device)
 
 #--------- Save --------#
-save_model(model=processed_model, target_dir="../models", model_name="efficient.pth", class_names=class_names)
+save_model(model=processed_model, target_dir="../models", model_name="efficient_model.pth", class_names=class_names)

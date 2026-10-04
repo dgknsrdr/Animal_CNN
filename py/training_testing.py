@@ -1,5 +1,5 @@
 import torch
-
+from copy import deepcopy
 def training_data(loss_fn:torch.nn.Module,
                   optimizer:torch.optim.Optimizer,
                   model:torch.nn.Module,
@@ -77,38 +77,83 @@ def testing_data(loss_fn:torch.nn.Module,
 
 
 
-def training (loss_fn:torch.nn.Module,
-              optimizer:torch.optim.Optimizer,
-              model:torch.nn.Module,
-              train_loader:torch.utils.data.DataLoader,
-              test_loader:torch.utils.data.DataLoader,
-              epochs:int,
-              device:torch.device):
-
+def training(
+    loss_fn,
+    optimizer,
+    model,
+    train_loader,
+    test_loader,
+    epochs,
+    device,
+    patience=5,
+    min_delta=0.001
+):
     results = {
         "train loss": [],
         "test loss": [],
-
         "train accuracy": [],
         "test accuracy": []
     }
 
-    for epoch in range(epochs):
-        train_loss , train_accuracy = training_data(loss_fn,optimizer,model,train_loader,device)
-        test_loss ,test_accuracy = testing_data(loss_fn,optimizer,model,test_loader,device)
+    best_val_loss = float("inf")
+    best_weights = None
+    best_epoch = 0
 
+    patience_reference = float("inf")
+    no_improvement = 0
+
+    for epoch in range(epochs):
+        train_loss, train_accuracy = training_data(
+            loss_fn, optimizer, model, train_loader, device
+        )
+
+        val_loss, val_accuracy = testing_data(
+            loss_fn, optimizer, model, test_loader, device
+        )
+
+        results["train loss"].append(train_loss)
+        results["test loss"].append(val_loss)
+        results["train accuracy"].append(train_accuracy)
+        results["test accuracy"].append(val_accuracy)
 
         print(
             f"Epoch: {epoch + 1} | "
             f"train loss: {train_loss:.4f} | "
             f"train accuracy: {train_accuracy:.4f} | "
-            f"test loss: {test_loss:.4f} | "
-            f"test accuracy: {test_accuracy:.4f}"
+            f"val loss: {val_loss:.4f} | "
+            f"val accuracy: {val_accuracy:.4f}"
         )
 
-        results["train loss"].append(train_loss.item() if isinstance(train_loss, torch.Tensor) else train_loss)
-        results["train accuracy"].append(train_accuracy.item() if isinstance(train_accuracy, torch.Tensor) else train_accuracy)
-        results["test loss"].append(test_loss.item() if isinstance(test_loss, torch.Tensor) else test_loss)
-        results["test accuracy"].append(test_accuracy.item() if isinstance(test_accuracy, torch.Tensor) else test_accuracy)
 
-    return results ,model
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            best_epoch = epoch + 1
+            best_weights = {
+                name: tensor.detach().cpu().clone()
+                for name, tensor in model.state_dict().items()
+            }
+
+
+        if val_loss < patience_reference - min_delta:
+            patience_reference = val_loss
+            no_improvement = 0
+        else:
+            no_improvement += 1
+
+        if no_improvement >= patience:
+            print(
+                f"Early stopping: {patience} epoch boyunca "
+                "validation loss yeterince iyileşmedi."
+            )
+            break
+
+    if best_weights is not None:
+        model.load_state_dict(best_weights)
+        model.eval()
+
+        print(
+            f"En iyi ağırlıklar yüklendi: epoch {best_epoch}, "
+            f"val loss {best_val_loss:.4f}"
+        )
+
+    return results, model

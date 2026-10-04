@@ -18,4 +18,4 @@ def save_model(model : torch.nn.Module,
     torch.save({
         "model_state_dict": model.state_dict(),
         "class_names": class_names
-    }, "../models/efficientnet_animals.pth")
+    }, "../models/efficient_model.pth")

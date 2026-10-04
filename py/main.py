@@ -11,7 +11,7 @@ from py.animal_model import AnimalModel
 #------ Device ------#
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+print(device)
 #------- Models ------#
 
 my_own_model = AnimalModel().to(device)
@@ -26,12 +26,12 @@ train_loader ,test_loader ,val_loader ,class_names= Data_Loader(train_transform=
 #-------Optimizer and Loss ------#
 
 optimizer1 = torch.optim.Adam(efficient_model.classifier.parameters(),lr=0.001)
-optimizer = torch.optim.Adam(params=my_own_model.parameters(),lr=0.001)
+#optimizer = torch.optim.Adam(params=my_own_model(),lr=0.001)
 loss_fn = nn.CrossEntropyLoss()
 
 #-------- Training --------#
 
-result,processed_model = training(loss_fn=loss_fn,optimizer=optimizer1,model=efficient_model,train_loader=train_loader,test_loader=test_loader,epochs=6,device=device)
+result,processed_model = training(loss_fn=loss_fn,optimizer=optimizer1,model=efficient_model,train_loader=train_loader,test_loader=test_loader,epochs=20,device=device)
 
 #--------- Save --------#
-save_model(model=processed_model, target_dir="../models", model_name="EfficientNet_model", class_names=class_names)
+save_model(model=processed_model, target_dir="../models", model_name="efficient.pth", class_names=class_names)

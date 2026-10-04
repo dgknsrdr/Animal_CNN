@@ -9,7 +9,7 @@ def EfficienModel():
     for param in efficient_model.parameters():
         param.requires_grad = False
 
-    num_classes = 45 # Subset ise asıl dataset.classes kullan
+    num_classes = 45
     efficient_model.classifier[1] = nn.Linear(
         efficient_model.classifier[1].in_features,
         num_classes

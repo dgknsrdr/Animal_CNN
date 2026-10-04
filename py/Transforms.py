@@ -31,7 +31,7 @@ def Get_Transform():
         weights.transforms()
     ])
 
-    model1_test_transform = weights.transforms
+    model1_test_transform = weights.transforms()
 
     return train_transform , test_transform ,model1_train_transform ,model1_test_transform
 

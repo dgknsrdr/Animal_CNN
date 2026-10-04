@@ -19,7 +19,7 @@ from animal_model import AnimalModel
 # app.py'nin bir üstünde models ve template klasörleri bulunuyor.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-EFFICIENT_MODEL_PATH = BASE_DIR / "models" / "efficientnet_animals.pth"
+EFFICIENT_MODEL_PATH = BASE_DIR / "models" / "efficient_model.pth"
 
 # Kendi modelini eklediğinde None yerine dosya yolunu yaz:
 BASIC_MODEL_PATH = BASE_DIR / "models" / "basic_animals.pth"
@@ -29,10 +29,10 @@ lock = Lock()
 logger = logging.getLogger(__name__)
 
 # Mevcut transform dosyanı kullanıyoruz.
-train_transform, test_transform, model1_train_transform = Get_Transform()
+train_transform, test_transform, model1_train_transform ,model1_test_transform= Get_Transform()
 
 basic_test_transform = test_transform
-efficient_test_transform = EfficientNet_B0_Weights.DEFAULT.transforms()
+efficient_test_transform = model1_test_transform
 
 
 @asynccontextmanager

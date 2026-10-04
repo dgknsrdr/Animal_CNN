@@ -1,10 +1,10 @@
 import torch
-from training_testing import training
+from py.training_testing import training
 import torch.nn as nn
-from transfer_learning import EfficienModel
-from utils import save_model
+from py.transfer_learning import EfficienModel
+from py.utils import save_model
 from py.data_load import Data_Loader
-from Transforms import Get_Transform
+from py.Transforms import Get_Transform
 from py.animal_model import AnimalModel
 
 

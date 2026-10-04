@@ -1,5 +1,5 @@
 from torchvision import transforms
-from torchvision.models import EfficientNet_B0_Weights ,efficientnet_b0
+from torchvision.models import EfficientNet_B0_Weights
 
 def Get_Transform():
 

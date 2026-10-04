@@ -1,5 +1,5 @@
 import torch
-from copy import deepcopy
+
 def training_data(loss_fn:torch.nn.Module,
                   optimizer:torch.optim.Optimizer,
                   model:torch.nn.Module,

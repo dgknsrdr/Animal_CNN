@@ -2,7 +2,7 @@ import torch.nn as nn
 
 
 class AnimalModel(nn.Module):
-    def __init__(self):
+    def __init__(self,num_classes:int=45):
         super().__init__()
         self.cnn = nn.Sequential(
             nn.Conv2d(3,32,kernel_size=3,padding=1),
@@ -49,7 +49,7 @@ class AnimalModel(nn.Module):
             nn.Linear(512*2*2,512),
             nn.ReLU(),
             nn.Dropout(p=0.4),
-            nn.Linear(512, 45)
+            nn.Linear(512, num_classes)
 
         )
 

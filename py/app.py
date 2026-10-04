@@ -6,13 +6,11 @@ import logging
 import warnings
 
 import torch
-from torch import nn
-from torchvision.models import efficientnet_b0, EfficientNet_B0_Weights
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from PIL import Image, ImageOps, UnidentifiedImageError
-
-from Transforms import Get_Transform
+from py.transfer_learning import EfficienModel
+from py.Transforms import Get_Transform
 from py.animal_model import AnimalModel
 
 
@@ -104,18 +102,13 @@ def get_model(model_type):
             num_classes = len(class_names)
 
             if model_type == "transfer_learning":
-                model = efficientnet_b0(weights=None)
-                model.classifier[1] = nn.Linear(
-                    model.classifier[1].in_features,
-                    num_classes
+                model = EfficienModel(
+                    num_classes=num_classes,
+                    pretrained=False
                 )
 
             elif model_type == "basic":
-                model = AnimalModel()
-                model.cnn[-1] = nn.Linear(
-                    model.cnn[-1].in_features,
-                    num_classes
-                )
+                model = AnimalModel(num_classes=num_classes)
 
             model.load_state_dict(
                 checkpoint["model_state_dict"],

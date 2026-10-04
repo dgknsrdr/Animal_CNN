@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 from PIL import Image, ImageOps, UnidentifiedImageError
 from py.transfer_learning import EfficienModel
 from py.Transforms import Get_Transform
-from animal_model import AnimalModel
+from py.animal_model import AnimalModel
 
 
 # app.py'nin bir üstünde models ve template klasörleri bulunuyor.

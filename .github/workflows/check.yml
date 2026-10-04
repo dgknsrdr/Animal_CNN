@@ -25,7 +25,7 @@ jobs:
         run: |
           python - <<'PY'
           import torch
-          from animal_model import AnimalModel
+          from py.animal_model import AnimalModel
 
           model = AnimalModel()
           model.eval()
